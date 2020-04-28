@@ -1,97 +1,48 @@
 #!/usr/bin/python3.7
-# -*- coding: utf-8 -*-
 """
-# Estimating COVID-19's $R_t$ in Real-Time - UK
+# Estimating COVID-19's $R_t$ Daily - UK
 
-Ben and Issac Upcroft adapted from Kevin Systrom's notebook - April 22
+Adapted from Kevin Systrom's notebook - April 22 2020
 
-Model originally built by [Thomas Vladeck](https://github.com/tvladeck) in Stan, parts inspired by the work over at https://epiforecasts.io/, lots of help from [Thomas Wiecki](https://twitter.com/twiecki). Thank you to everyone who helped.
+Ben and Isaac Upcroft - 26/4/2020
+
+Model originally built by [Thomas Vladeck](https://github.com/tvladeck) in Stan,
+parts inspired by the work over at https://epiforecasts.io/,
+lots of help from [Thomas Wiecki](https://twitter.com/twiecki).
+
+Thank you to everyone who helped.
 """
 
-# Commented out IPython magic to ensure Python compatibility.
-# For some reason Theano is unhappy when I run the GP, need to disable future warnings
+# For some reason Theano is unhappy when I run the GP,
+# need to disable future warnings
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import os
-import io
 import requests
 import pymc3 as pm
 import pandas as pd
 import numpy as np
-import theano
 import theano.tensor as tt
+
+import england_data
+import integrity_check
 
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
-from matplotlib import ticker
-
-from datetime import date
-from datetime import datetime
 
 from IPython.display import clear_output
 
 import shutil
 import time
 
-
-# %config InlineBackend.figure_format = 'retina'
-
-"""## Load local authority information and convert to regions
+## Load local authority information and convert to regions
 #### Load
-"""
 
-# proxies = {
-#  “http”: “http://10.10.10.10:8000”,
-#  “https”: “http://10.10.10.10:8000”,
-# }
+regions = england_data.load_data()
 
-url = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
-datastr = requests.get('https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv',
-                       allow_redirects=True).text
-data_file = io.StringIO(datastr)
-covid_cases = pd.read_csv(data_file,
-                          parse_dates=['Specimen date'],
-                          index_col=['Area name', 'Specimen date']).sort_index()
-
-regions = covid_cases[covid_cases['Area type'] == 'Region']
-
-#
-# mapped local authorities into regions
-#
-
-# url = 'https://opendata.arcgis.com/datasets/c457af6314f24b20bb5de8fe41e05898_0.csv'
-# local_to_region_lookup = pd.read_csv(url)
-# lookup_dict = pd.Series(local_to_region_lookup.RGN17NM.values,index=local_to_region_lookup.LAD17NM).to_dict()
-# covid_cases['Region'] = covid_cases['Area name'].map(lookup_dict)
-
-# display(regions)
-
-"""#### Integrity Check"""
-
-# # Make sure that all the states have current data
-today = datetime.combine(date.today(), datetime.min.time())
-last_updated = regions.reset_index('Specimen date').groupby('Area name')['Specimen date'].max()
-is_current = last_updated < today
-
-try:
-    assert is_current.sum() == 0
-except AssertionError:
-    print("Not all regions have updated")
-#    display(last_updated[is_current])
-
-# Ensure all case diffs are greater than zero
-for region, grp in regions.groupby('Area name'):
-    new_cases = grp['Cumulative lab-confirmed cases'].diff().dropna()
-    is_positive = new_cases.ge(0)
-
-    try:
-        assert is_positive.all()
-    except AssertionError:
-        print(f"Warning: {region} has date with negative case counts")
-#        display(new_cases[~is_positive])
-
-# display(regions)
+#### Integrity Check
+integrity_check.is_data_current(regions)
+integrity_check.do_daily_cases_increase(regions)
 
 """## Load Patient Information
 #### Download
@@ -457,7 +408,7 @@ for region, model in models.items():
 Uncomment if you'd like
 """
 
-# results.to_csv('data/rt_2020_04_26.csv')
+results.to_csv('data/rt_2020_04_28.csv')
 
 """### Render Charts"""
 
@@ -466,11 +417,11 @@ def plot_rt(name, result, ax, c=(.3,.3,.3,1), ci=(0,0,0,.05)):
     ax.set_title(name)
     ax.plot(result['median'],
             marker='o',
-            markersize=4,
+            markersize=3,
             markerfacecolor='w',
             lw=1,
             c=c,
-            markevery=2)
+            markevery=1)
     ax.fill_between(
         result.index,
         result['lower_90'].values,
