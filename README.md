@@ -19,7 +19,7 @@ This script will download latest data for the UK, create the model for computing
 
 
 ## Walkthrough description
-The Jupyter files (.ipynb) are a greart walkthrough of how the model works using US data
+The Jupyter files (*.ipynb) are a great walkthrough of how the model works using US data
 
 Realtime R0.ipynb: in depth description
 
