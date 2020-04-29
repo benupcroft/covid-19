@@ -13,7 +13,14 @@ Systrom kindly released the model here: https://github.com/k-sys/covid-19/
 
 
 ## Quickstart
-Run rt_live_uk.py (main script)
+Run rt_live_uk.py: main script
 
 This script will download latest data for the UK, create the model for computing Rt, and compute Rt for the last ~50 days. 
 
+
+## Walkthrough description
+The Jupyter files (.ipynb) are a greart walkthrough of how the model works using US data
+
+Realtime R0.ipynb: in depth description
+
+Realtime Rt mcmc.ipynb: includes the latest model using pymc3
