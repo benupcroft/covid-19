@@ -57,7 +57,7 @@ def plot_rt():
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    web_directory = os.path.join(script_directory, '../../', 'mysite')
+    web_directory = os.path.join(script_directory, '../../', 'rtuk/mysite')
     img_file = os.path.join(web_directory, 'static/img/latest.png')
     saved_img_file = os.path.join(web_directory, 'static/img/old_plots/rt_plot-'+timestr+'.png')
     # print('web_directory = ', web_directory)
