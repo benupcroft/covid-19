@@ -29,6 +29,12 @@ from plot_rtuk import plot_rt
 import compare
 
 
+# Find the relationship between onset of symptoms and the delay until
+# actual medical confirmation
+# ~100mb download (be ... patient!)
+p_delay = prob_delay()
+
+
 # Load country data and convert to regions
 regions = load_data()
 
@@ -36,12 +42,6 @@ regions = load_data()
 # Check the integrity of the data
 is_data_current(regions)
 do_daily_cases_increase(regions)
-
-
-# Find the relationship between onset of symptoms and the delay until
-# actual medical confirmation
-# ~100mb download (be ... patient!)
-p_delay = prob_delay()
 
 
 # Quick test to see delay curve for a single region
