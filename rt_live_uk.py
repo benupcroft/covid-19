@@ -44,33 +44,33 @@ is_data_current(regions)
 do_daily_cases_increase(regions)
 
 
-# Quick test to see delay curve for a single region
-# Let's look at the adjusted data for a single region - South East
-# (contains Oxford)
-region = 'South East'
-confirmed = regions.xs(region)['Cumulative lab-confirmed cases'].diff().dropna()
-# confirmed.tail()
-
-
-# Compute the adjustment using the probability of delay - p_delay
-onset = confirmed_to_onset(confirmed, p_delay)
-adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
-
-
-# Plot the data for our our single region
-# plot_adjusted_data(region,confirmed,onset,adjusted)
+# # Quick test to see delay curve for a single region
+# # Let's look at the adjusted data for a single region - South East
+# # (contains Oxford)
+# region = 'South East'
+# confirmed = regions.xs(region)['Cumulative lab-confirmed cases'].diff().dropna()
+# # confirmed.tail()
+#
+#
+# # Compute the adjustment using the probability of delay - p_delay
+# onset = confirmed_to_onset(confirmed, p_delay)
+# adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
+#
+#
+# # Plot the data for our our single region
+# # plot_adjusted_data(region,confirmed,onset,adjusted)
 
 
 # Let's run all the regions and compute Rt
 def create_and_run_model(name, region):
-    confirmed = region['Cumulative lab-confirmed cases'].diff().dropna()
+    confirmed = region['cumulative cases'].diff().dropna()
     onset = confirmed_to_onset(confirmed, p_delay)
     adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
     return mcmc_model.MCMCModel(name, onset, cumulative_p_delay).run()
 
 models = {}
 
-for region, grp in regions.groupby('Area name'):
+for region, grp in regions.groupby('area name'):
 
     print(region)
 
