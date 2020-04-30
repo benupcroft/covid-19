@@ -1,4 +1,5 @@
 """### Render Charts"""
+import os
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -54,8 +55,18 @@ def plot_rt():
 
     # move the old plot and save
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    shutil.move("web/static/img/latest.png", "web/static/img/old_plots/rt_plot-"+timestr+".png")
-    fig.savefig('web/static/img/latest.png', dpi=fig.dpi)
+
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    web_directory = os.path.join(script_directory, '../../', 'web/rtuk/mysite')
+    img_file = os.path.join(web_directory, 'static/img/latest.png')
+    saved_img_file = os.path.join(web_directory, 'static/img/old_plots/rt_plot-'+timestr+'.png')
+    # print('web_directory = ', web_directory)
+    # print('img_file = ', img_file)
+    # print('saved_img_file = ', saved_img_file)
+
+
+    shutil.move(img_file, saved_img_file)
+    fig.savefig(img_file, dpi=fig.dpi)
 
 
 # plot_rt()

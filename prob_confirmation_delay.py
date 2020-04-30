@@ -1,3 +1,4 @@
+import os
 import requests
 import pandas as pd
 from matplotlib import dates as mdates
@@ -48,12 +49,15 @@ def download_file(url, local_filename):
 
 def download_historical_data():
     URL = "https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/master/latest_data/latestdata.csv"
-    LINELIST_PATH = 'data/linelist.csv'
+
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    data_file = os.path.join(script_directory, 'data/linelist.csv')
+    LINELIST_PATH = data_file
 
     print('Downloading file, this will take a while ~100mb')
     try:
         download_file(URL, LINELIST_PATH)
-        clear_output(wait=True)
+        # clear_output(wait=True)
         print('Done downloading.')
     except:
         print('Something went wrong. Try again.')

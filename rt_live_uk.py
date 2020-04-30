@@ -20,28 +20,28 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import pandas as pd
 
-import england_data
-import integrity_check
-import prob_confirmation_delay
-import adjust_for_onset_dates
+from england_data import load_data
+from integrity_check import is_data_current, do_daily_cases_increase
+from prob_confirmation_delay import prob_delay
+from adjust_for_onset_dates import confirmed_to_onset, adjust_onset_for_right_censorship, plot_adjusted_data
 import mcmc_model
-import plot_rtuk
+from plot_rtuk import plot_rt
 import compare
 
 
 # Load country data and convert to regions
-regions = england_data.load_data()
+regions = load_data()
 
 
 # Check the integrity of the data
-integrity_check.is_data_current(regions)
-integrity_check.do_daily_cases_increase(regions)
+is_data_current(regions)
+do_daily_cases_increase(regions)
 
 
 # Find the relationship between onset of symptoms and the delay until
 # actual medical confirmation
 # ~100mb download (be ... patient!)
-p_delay = prob_confirmation_delay.prob_delay()
+p_delay = prob_delay()
 
 
 # Quick test to see delay curve for a single region
@@ -53,19 +53,19 @@ confirmed = regions.xs(region)['Cumulative lab-confirmed cases'].diff().dropna()
 
 
 # Compute the adjustment using the probability of delay - p_delay
-onset = adjust_for_onset_dates.confirmed_to_onset(confirmed, p_delay)
-adjusted, cumulative_p_delay = adjust_for_onset_dates.adjust_onset_for_right_censorship(onset, p_delay)
+onset = confirmed_to_onset(confirmed, p_delay)
+adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
 
 
 # Plot the data for our our single region
-# adjust_for_onset_dates.plot_adjusted_data(region,confirmed,onset,adjusted)
+# plot_adjusted_data(region,confirmed,onset,adjusted)
 
 
 # Let's run all the regions and compute Rt
 def create_and_run_model(name, region):
     confirmed = region['Cumulative lab-confirmed cases'].diff().dropna()
-    onset = adjust_for_onset_dates.confirmed_to_onset(confirmed, p_delay)
-    adjusted, cumulative_p_delay = adjust_for_onset_dates.adjust_onset_for_right_censorship(onset, p_delay)
+    onset = confirmed_to_onset(confirmed, p_delay)
+    adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
     return mcmc_model.MCMCModel(name, onset, cumulative_p_delay).run()
 
 models = {}
@@ -114,7 +114,7 @@ results.to_csv('data/latest_results.csv')
 
 
 ### Plot charts
-plot_rtuk.plot_rt()
+plot_rt()
 
 
 ### Compare to other analyses
