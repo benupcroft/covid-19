@@ -36,14 +36,14 @@ def download_only_if_newer(url):
     r = requests.get(url)
     url_time = r.headers['Last-Modified']
     url_date = parsedate(url_time)
-    # print("URL Date =", url_date)
 
     now = utc.localize(datetime.now())
-    # print("Now Date =", now)
-    # current_time = now.strftime("%H:%M:%S")
-    # print("Current Time =", current_time)
 
-    if url_date.date == now.date:
+    # print(str(url_date.date()))
+    # print(str(now.date()))
+
+    if url_date.date() == now.date():
+
         print('Updating with new cases from today')
         return True, url_date.date
     else:
