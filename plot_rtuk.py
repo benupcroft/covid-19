@@ -1,12 +1,12 @@
 #!/usr/bin/python3.7
-"""### Render Charts"""
+"""Render Charts"""
 import os
 import pandas as pd
-import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import dates as mdates
 import shutil
 import time
+
 
 def plot_rt():
     script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -18,16 +18,10 @@ def plot_rt():
     c = (0.3, 0.3, 0.3, 1)
     ci = (0, 0, 0, 0.05)
 
-    ncols = 3
-    nrows = int(np.ceil(results.index.levels[0].shape[0] / ncols))
+    fig = plt.figure()
+    ax = plt.gca()
 
-    fig, axes = plt.subplots(
-        nrows=nrows,
-        ncols=ncols,
-        figsize=(14, nrows * 3),
-        sharey='row')
-
-    for ax, (region, result) in zip(axes.flat, results.groupby('region')):
+    for indx, (region, result) in enumerate(results.groupby('region')):
 
         result = result.droplevel(0)
 
@@ -55,25 +49,30 @@ def plot_rt():
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
 
-    fig.tight_layout()
-    fig.set_facecolor('w')
+        fig.tight_layout()
+        fig.set_facecolor('w')
 
-    # move the old plot and save
-    timestr = time.strftime("%Y%m%d-%H%M%S")
+        # move the old plots and save the latest ones
+        timestr = time.strftime("%Y%m%d-%H%M%S")
 
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    web_directory = os.path.join(script_directory, '../../', 'rtuk/mysite')
-    img_file = os.path.join(web_directory, 'static/img/latest.png')
-    saved_img_file = os.path.join(web_directory, 'static/img/old_plots/rt_plot-'+timestr+'.png')
-    # print('web_directory = ', web_directory)
-    # print('img_file = ', img_file)
-    # print('saved_img_file = ', saved_img_file)
+        fig_name = 'latest' + str(indx) + '.png'
 
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        web_directory = os.path.join(script_directory, '../../', 'rtuk/mysite')
+        img_file = os.path.join(web_directory, 'static/img/' + fig_name)
+        saved_img_file = os.path.join(web_directory, 'static/img/old_plots/rt_plot-' + str(indx) + '-' + timestr + '.png')
+        # print('web_directory = ', web_directory)
+        # print('img_file = ', img_file)
+        # print('saved_img_file = ', saved_img_file)
 
-    shutil.move(img_file, saved_img_file)
-    fig.savefig(img_file, dpi=fig.dpi)
+        if os.path.exists(img_file):
+            shutil.move(img_file, saved_img_file)
+
+        fig.savefig(img_file, dpi=fig.dpi)
+
+        plt.cla()
 
     # plt.show()
 
-
 # plot_rt()
+
