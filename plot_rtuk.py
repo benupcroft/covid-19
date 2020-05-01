@@ -9,7 +9,9 @@ import shutil
 import time
 
 def plot_rt():
-    results = pd.read_csv('data/latest_results.csv',
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    results_file = os.path.join(script_directory, 'data/latest_results.csv')
+    results = pd.read_csv(results_file,
                           parse_dates=['date'],
                           index_col=['region', 'date']).sort_index()
 
@@ -70,4 +72,4 @@ def plot_rt():
     fig.savefig(img_file, dpi=fig.dpi)
 
 
-# plot_rt()
+plot_rt()

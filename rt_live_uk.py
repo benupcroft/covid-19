@@ -18,6 +18,7 @@ Thank you to everyone who helped.
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
+import os
 import pandas as pd
 
 from england_data import load_data
@@ -110,7 +111,9 @@ for region, model in models.items():
 
 ### Write out to CSV
 # Uncomment if you'd like
-results.to_csv('data/latest_results.csv')
+script_directory = os.path.dirname(os.path.abspath(__file__))
+results_file = os.path.join(script_directory, 'data/latest_results.csv')
+results.to_csv(results_file)
 
 
 ### Plot charts
