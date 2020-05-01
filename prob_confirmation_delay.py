@@ -10,10 +10,10 @@ from matplotlib import pyplot as plt
 # and confirmation
 def prob_delay():
 
-    download_historical_data()
+    data_file = download_historical_data()
 
     # Parse & clean global historical patient info
-    patients = parse_patient_info()
+    patients = parse_patient_info(data_file)
 
     # Show relationship between onset of symptoms and actual medical confirmation
     plot_onset_vs_confirmation(patients)
@@ -59,6 +59,7 @@ def download_historical_data():
         download_file(URL, LINELIST_PATH)
         # clear_output(wait=True)
         print('Done downloading.')
+        return LINELIST_PATH
     except:
         print('Something went wrong. Try again.')
 
@@ -75,10 +76,10 @@ def download_historical_data():
     #     print('Already downloaded CSV')
 
 
-def parse_patient_info():
+def parse_patient_info(data_file):
     # Load the patient CSV
     patients = pd.read_csv(
-        'data/linelist.csv',
+        data_file,
         parse_dates=False,
         usecols=[
             'date_confirmation',

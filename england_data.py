@@ -27,7 +27,7 @@ def load_data():
 
     regions = covid_cases[covid_cases['area type'] == 'Region']
 
-    print('columns = ', regions.columns)
-    print('index = ', regions.index)
+    # print('columns = ', regions.columns)
+    # print('index = ', regions.index)
 
     return regions
