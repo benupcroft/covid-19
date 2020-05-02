@@ -27,7 +27,18 @@ def load_england_data(url):
     # need to rename indexes as well as columns
     covid_cases.index.names = ['area name', 'date']
 
+    covid_cases.drop(['Area code',
+                      'Daily lab-confirmed cases',
+                      'Change in daily cases',
+                      'Previously reported cumulative cases',
+                      'Previously reported daily cases',
+                      'Change in cumulative cases'],
+                     axis=1,
+                     inplace=True)
+
     regions = covid_cases[covid_cases['area type'] == 'Region']
+
+    print(regions.columns)
 
     return regions
 
@@ -43,8 +54,7 @@ def download_only_if_newer(url):
     # print(str(now.date()))
 
     if url_date.date() == now.date():
-
-        print('Updating with new cases from today')
+        print('Updating with new cases from today: ' + url_date.strftime("%d/%m/%y"))
         return True, url_date.date
     else:
         print('Latest data has not been updated yet. Last update was ' + url_date.strftime("%d/%m/%y"))
