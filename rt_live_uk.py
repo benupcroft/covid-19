@@ -21,7 +21,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import os
 import pandas as pd
 
-from load_data import load_england_data, download_only_if_newer
+from load_data import load_england_region_data, download_only_if_newer, load_uk_countries_data
 from integrity_check import is_data_current, do_daily_cases_increase
 from prob_confirmation_delay import prob_delay
 from adjust_for_onset_dates import confirmed_to_onset, adjust_onset_for_right_censorship, plot_adjusted_data
@@ -35,13 +35,34 @@ from plot_rtuk import plot_rt
 p_delay = prob_delay()
 
 ### Load country data and convert to regions
-# Data for england
-url = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
+england_url = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
+# scotland not converted to regions yet
+scotland_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-scotland.csv'
+wales_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-wales.csv'
+nireland_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-northern-ireland.csv'
+england_country_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-england.csv'
+uk_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-uk.csv'
 
-is_updated, url_date = download_only_if_newer(url)
+is_updated, url_date = download_only_if_newer(england_url)
 # don't bother processing if data is still old
 if is_updated:
-    regions = load_england_data(url)
+    # download and load up uk data
+    # uk data includes all the tests outside of NHS (accounts for almost a 1/3 of tests)
+    # regions0 = load_uk_countries_data(uk_url, 'UK')
+    # approximately 4% of people aren't recorded in regional-only data
+    regions1 = load_england_region_data(england_url)
+    regions2 = load_uk_countries_data(scotland_url, 'Scotland')
+    regions3 = load_uk_countries_data(wales_url, 'Wales')
+    regions4 = load_uk_countries_data(nireland_url, 'N. Ireland')
+    # regions5 = load_uk_countries_data(england_country_url, 'England')
+    # regions6 = regions1.groupby(level=[1]).sum()
+    # regions6['area name'] = 'England from Regions'
+    # regions6.set_index(['area name'], inplace=True, append=True)
+    # regions6 = regions6.reorder_levels(['area name', 'date'], axis=0)
+    frames = [regions1, regions2, regions3, regions4]
+    regions = pd.concat(frames)
+    # print(regions)
+
 
     # Check the integrity of the data
     is_data_current(regions)

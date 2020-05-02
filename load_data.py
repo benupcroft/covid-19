@@ -8,7 +8,7 @@ import pandas as pd
 # area type = 'country', 'region', etc.
 # area name = either the name of a country or region, eg. England, South East, etc
 
-def load_england_data(url):
+def load_england_region_data(url):
 
     datastr = requests.get(url,
                            allow_redirects=True).text
@@ -36,11 +36,42 @@ def load_england_data(url):
                      axis=1,
                      inplace=True)
 
-    regions = covid_cases[covid_cases['area type'] == 'Region']
+    covid_cases = covid_cases[covid_cases['area type'] == 'Region']
+    covid_cases.drop('area type',axis=1,inplace=True)
 
-    print(regions.columns)
+    # print(regions.columns)
 
-    return regions
+    return covid_cases
+
+def load_uk_countries_data(url, country):
+
+    datastr = requests.get(url,
+                           allow_redirects=True).text
+    data_file = io.StringIO(datastr)
+    covid_cases = pd.read_csv(data_file,
+                              parse_dates=['Date'],
+                              index_col=['Date']).sort_index()
+
+    # print(covid_cases.columns)
+
+    # need to rename indexes as well as columns
+    covid_cases.index.names = ['date']
+
+    covid_cases.drop(['Tests',
+                      'Deaths'],
+                     axis=1,
+                     inplace=True)
+
+    covid_cases.rename(columns={'Date': 'date',
+                                'ConfirmedCases': 'cumulative cases'},
+                       inplace=True)
+
+    covid_cases['area name'] = country
+    covid_cases.set_index(['area name'], inplace=True, append=True)
+    covid_cases = covid_cases.reorder_levels(['area name', 'date'], axis=0)
+
+    return covid_cases
+
 
 
 def download_only_if_newer(url):
