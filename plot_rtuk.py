@@ -41,8 +41,8 @@ def plot_rt():
             color=ci,
             lw=0)
         ax.axhline(1.0, linestyle=':', lw=1)
-        ax.axvline(x=mdates.datetime.date(2020, 3, 12), linewidth=1, linestyle='--', color='tab:gray')
-        ax.text(mdates.datetime.date(2020, 3, 13), 0.6, 'Self-isolation', fontsize=8, rotation=90, color='tab:gray')
+        # ax.axvline(x=mdates.datetime.date(2020, 3, 12), linewidth=1, linestyle='--', color='tab:gray')
+        # ax.text(mdates.datetime.date(2020, 3, 13), 0.6, 'Self-isolation', fontsize=8, rotation=90, color='tab:gray')
         ax.axvline(x=mdates.datetime.date(2020,3,23), linewidth=1, linestyle='--', color='tab:orange')
         ax.text(mdates.datetime.date(2020, 3, 24), 0.6, 'Nationwide lockdown', fontsize=8, rotation=90, color='tab:orange')
 
