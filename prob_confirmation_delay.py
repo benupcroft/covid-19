@@ -10,7 +10,8 @@ from matplotlib import pyplot as plt
 # and confirmation
 def prob_delay():
 
-    data_file = download_historical_data()
+    # data_file = download_historical_data()
+    data_file = 'data/linelist.csv'
 
     # Parse & clean global historical patient info
     patients = parse_patient_info(data_file)

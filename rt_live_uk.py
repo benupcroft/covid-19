@@ -18,14 +18,13 @@ Thank you to everyone who helped.
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import os
 import pandas as pd
 
 from load_data import load_england_region_data, download_only_if_newer, load_uk_countries_data
 from integrity_check import is_data_current, do_daily_cases_increase
 from prob_confirmation_delay import prob_delay
 from adjust_for_onset_dates import confirmed_to_onset, adjust_onset_for_right_censorship, plot_adjusted_data
-import mcmc_model
+from run_model import run_model
 from plot_rtuk import plot_rt
 
 
@@ -36,7 +35,6 @@ p_delay = prob_delay()
 
 ### Load country data and convert to regions
 england_url = 'https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv'
-# scotland not converted to regions yet
 scotland_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-scotland.csv'
 wales_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-wales.csv'
 nireland_url = 'https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-totals-northern-ireland.csv'
@@ -59,7 +57,9 @@ if is_updated:
     # regions6['area name'] = 'England from Regions'
     # regions6.set_index(['area name'], inplace=True, append=True)
     # regions6 = regions6.reorder_levels(['area name', 'date'], axis=0)
+
     frames = [regions1, regions2, regions3, regions4]
+    # frames = [regions1]
     regions = pd.concat(frames)
     # print(regions)
 
@@ -85,60 +85,7 @@ if is_updated:
     # # Plot the data for our our single region
     # # plot_adjusted_data(region,confirmed,onset,adjusted)
 
-
-    # Let's run all the regions and compute Rt
-    def create_and_run_model(name, region):
-        confirmed = region['cumulative cases'].diff().dropna()
-        onset = confirmed_to_onset(confirmed, p_delay)
-        adjusted, cumulative_p_delay = adjust_onset_for_right_censorship(onset, p_delay)
-        return mcmc_model.MCMCModel(name, onset, cumulative_p_delay).run()
-
-    models = {}
-
-    for region, grp in regions.groupby('area name'):
-
-        print(region)
-
-        if region in models:
-            print(f'Skipping {region}, already in cache')
-            continue
-
-        models[region] = create_and_run_model(region,grp.droplevel(0))
-
-
-    ### Handle Divergences
-    # Check to see if there were divergences
-    n_diverging = lambda x: x.trace['diverging'].nonzero()[0].size
-    divergences = pd.Series([n_diverging(m) for m in models.values()], index=models.keys())
-    has_divergences = divergences.gt(0)
-
-    print('Diverging states:')
-    # print(divergences[has_divergences])
-
-    # Rerun states with divergences
-    for region, n_divergences in divergences[has_divergences].items():
-        models[region].run()
-
-
-    ## Compile Results
-    results = None
-
-    for region, model in models.items():
-
-        df = mcmc_model.df_from_model(model)
-
-        if results is None:
-            results = df
-        else:
-            results = pd.concat([results, df], axis=0)
-
-
-    ### Write out to CSV
-    # Uncomment if you'd like
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    results_file = os.path.join(script_directory, 'data/latest_results.csv')
-    results.to_csv(results_file)
-
+    run_model(p_delay, regions)
 
     # Plot charts
     plot_rt()
@@ -148,3 +95,4 @@ if is_updated:
 
     ### Compare to other analyses
     # compare.compare_epiforecasts()
+

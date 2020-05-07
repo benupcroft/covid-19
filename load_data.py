@@ -73,6 +73,47 @@ def load_uk_countries_data(url, country):
     return covid_cases
 
 
+def load_lombardy_region_data(url):
+
+    datastr = requests.get(url,
+                           allow_redirects=True).text
+    data_file = io.StringIO(datastr)
+    covid_cases = pd.read_json(data_file,
+                                convert_dates=['data'])
+                                # index_col=['data']).sort_index()
+
+    # print(covid_cases.columns)
+
+    covid_cases.drop(['stato', 'codice_regione', 'lat',
+       'long', 'ricoverati_con_sintomi', 'terapia_intensiva',
+       'totale_ospedalizzati', 'isolamento_domiciliare',
+       'variazione_totale_positivi', 'nuovi_positivi', 'dimessi_guariti',
+       'deceduti', 'totale_positivi', 'tamponi', 'casi_testati', 'note_it',
+       'note_en'],
+                     axis=1,
+                     inplace=True)
+
+    covid_cases.rename(columns={'data': 'date',
+                                'denominazione_regione': 'region',
+                                'totale_casi': 'cumulative cases'},
+                       inplace=True)
+
+    covid_cases = covid_cases.loc[covid_cases['region'] == 'Lombardia']
+    covid_cases.drop(['region'],
+                     axis=1,
+                     inplace=True)
+
+    covid_cases['area name'] = 'Lombardy'
+    covid_cases.set_index(['date'], inplace=True)
+    covid_cases.set_index(['area name'], inplace=True, append=True)
+    covid_cases = covid_cases.reorder_levels(['area name', 'date'], axis=0)
+
+    covid_cases.shift(14,axis=0)
+
+    # covid_cases.cumsum(axis=0)
+
+    return covid_cases
+
 
 def download_only_if_newer(url):
     r = requests.get(url)

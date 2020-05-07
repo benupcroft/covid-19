@@ -24,3 +24,5 @@ The Jupyter files (*.ipynb) are a great walkthrough of how the model works using
 Realtime R0.ipynb: in depth description
 
 Realtime Rt mcmc.ipynb: includes the latest model using pymc3
+
+region_comparison.py: Comparison of similar regions around the world at lockdown. 
