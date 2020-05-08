@@ -11,7 +11,9 @@ from matplotlib import pyplot as plt
 def prob_delay():
 
     # data_file = download_historical_data()
-    data_file = 'data/linelist.csv'
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    data_file = os.path.join(script_directory, 'data/linelist.csv')
+
 
     # Parse & clean global historical patient info
     patients = parse_patient_info(data_file)
