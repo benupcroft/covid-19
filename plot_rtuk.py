@@ -51,6 +51,9 @@ def plot_rt():
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
 
+        ax.set_ylabel(r'$R_t$', rotation='horizontal')
+        ax.yaxis.set_label_coords(-0.05, 1.02)
+
         fig.tight_layout()
         fig.set_facecolor('w')
 
