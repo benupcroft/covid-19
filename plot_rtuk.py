@@ -43,11 +43,10 @@ def plot_rt():
         ax.axhline(1.0, linestyle=':', lw=1)
         # ax.axvline(x=mdates.datetime.date(2020, 3, 12), linewidth=1, linestyle='--', color='tab:gray')
         # ax.text(mdates.datetime.date(2020, 3, 13), 0.6, 'Self-isolation', fontsize=8, rotation=90, color='tab:gray')
-        ax.axvline(x=mdates.datetime.date(2020,3,23), linewidth=1, linestyle='--', color='tab:orange')
-        ax.text(mdates.datetime.date(2020, 3, 24), 0.6, 'Nationwide lockdown', fontsize=8, rotation=90, color='tab:orange')
-        ax.axvline(x=mdates.datetime.date(2020,5,11), linewidth=1, linestyle='--', color='y')
-        ax.text(mdates.datetime.date(2020, 5, 9), 0.6, 'England - Return to work for those who cannot work from home\n'
-                                                        'Scotland, Wales, N. Ireland - Continued lockdown', fontsize=8, rotation=90, color='y')
+        # ax.axvline(x=mdates.datetime.date(2020,3,23), linewidth=1, linestyle='--', color='tab:orange')
+        # ax.text(mdates.datetime.date(2020, 3, 24), 0.6, 'Nationwide lockdown', fontsize=8, rotation=90, color='tab:orange')
+        ax.axvline(x=mdates.datetime.date(2020,5,13), linewidth=1, linestyle='--', color='y')
+        ax.text(mdates.datetime.date(2020, 5, 12), 0.6, 'England - Return to work', fontsize=8, rotation=90, color='tab:orange')
 
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
