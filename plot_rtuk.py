@@ -77,7 +77,16 @@ def plot_rt():
 
         plt.cla()
 
-    # plt.show()
+    # Write out the date and time to a json file and save in website directory
+    # This file is used to display the last updated time and date on the website
+    last_updated_time = time.strftime("%H:%M %d/%m/%Y")
+    last_updated_time_file = os.path.join(web_directory, 'static/last_updated_time.json')
 
+    with open(last_updated_time_file, "w") as text_file:
+        text_file.write('{\n'
+                        '\t\"last_updated_timestamp\": ' + last_updated_time +
+                        '\n}')
+
+    # plt.show()
 # plot_rt()
 
