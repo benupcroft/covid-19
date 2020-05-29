@@ -47,6 +47,8 @@ def plot_rt():
         # ax.text(mdates.datetime.date(2020, 3, 24), 0.6, 'Nationwide lockdown', fontsize=8, rotation=90, color='tab:orange')
         ax.axvline(x=mdates.datetime.date(2020,5,13), linewidth=1, linestyle='--', color='tab:orange')
         ax.text(mdates.datetime.date(2020, 5, 12), 0.6, 'England - Return to work', fontsize=8, rotation=90, color='tab:orange')
+        ax.axvline(x=mdates.datetime.date(2020,5,28), linewidth=1, linestyle='--', color='tab:orange')
+        ax.text(mdates.datetime.date(2020, 5, 27), 0.6, 'Scotland - Phase 1 for easing lockdown', fontsize=8, rotation=90, color='tab:orange')
 
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
@@ -88,5 +90,8 @@ def plot_rt():
                         '\n}')
 
     # plt.show()
-# plot_rt()
+
+
+if __name__ == '__main__':
+    plot_rt()
 
