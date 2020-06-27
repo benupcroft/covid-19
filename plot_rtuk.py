@@ -49,6 +49,12 @@ def plot_rt():
         ax.text(mdates.datetime.date(2020, 5, 12), 0.6, 'England - Return to work', fontsize=8, rotation=90, color='tab:orange')
         ax.axvline(x=mdates.datetime.date(2020,5,28), linewidth=1, linestyle='--', color='tab:orange')
         ax.text(mdates.datetime.date(2020, 5, 27), 0.6, 'Scotland - Phase 1 for easing lockdown', fontsize=8, rotation=90, color='tab:orange')
+        ax.axvline(x=mdates.datetime.date(2020,6,1), linewidth=1, linestyle='--', color='tab:orange')
+        ax.text(mdates.datetime.date(2020, 5,31), 0.6, 'England - Some year levels return to school', fontsize=8, rotation=90, color='tab:orange')
+        ax.axvline(x=mdates.datetime.date(2020,6,18), linewidth=1, linestyle='--', color='tab:orange')
+        ax.text(mdates.datetime.date(2020, 6,17), 0.6, 'Scotland - Phase 2 for easing lockdown', fontsize=8, rotation=90, color='tab:orange')
+        ax.axvline(x=mdates.datetime.date(2020,6,22), linewidth=1, linestyle='--', color='tab:orange')
+        ax.text(mdates.datetime.date(2020, 6,21), 0.6, 'Wales - Non-essential shops reopen', fontsize=8, rotation=90, color='tab:orange')
 
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m'))
         ax.xaxis.set_major_locator(mdates.WeekdayLocator(interval=2))
@@ -86,7 +92,7 @@ def plot_rt():
 
     with open(last_updated_time_file, "w") as text_file:
         text_file.write('{\n'
-                        '\t\"last_updated_timestamp\": ' + last_updated_time +
+                        '\t\"last_updated_timestamp\": "' + last_updated_time + '"'
                         '\n}')
 
     # plt.show()

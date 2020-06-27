@@ -70,6 +70,13 @@ def load_uk_countries_data(url, country):
     covid_cases.set_index(['area name'], inplace=True, append=True)
     covid_cases = covid_cases.reorder_levels(['area name', 'date'], axis=0)
 
+    if country == 'Scotland':
+        # covid_cases = covid_cases.loc[(covid_cases.index.get_level_values('date') > '2020-06-14')]
+        # Manual correction to historical data before Scotland introduced a correction on 15 June 2020.
+        # This may not be correct but it is an estimate of the missed cases before correction
+        covid_cases.loc[(covid_cases.index.get_level_values('date') > '2020-05-01') & (
+                covid_cases.index.get_level_values('date') < '2020-06-15')] = covid_cases.loc[(covid_cases.index.get_level_values('date') > '2020-05-01') & (
+                covid_cases.index.get_level_values('date') < '2020-06-15')] + 2000
     return covid_cases
 
 
@@ -108,9 +115,37 @@ def load_lombardy_region_data(url):
     covid_cases.set_index(['area name'], inplace=True, append=True)
     covid_cases = covid_cases.reorder_levels(['area name', 'date'], axis=0)
 
-    covid_cases.shift(14,axis=0)
+    return covid_cases
 
-    # covid_cases.cumsum(axis=0)
+
+def load_newyork_region_data(url):
+
+    datastr = requests.get(url,
+                           allow_redirects=True).text
+    data_file = io.StringIO(datastr)
+    covid_cases = pd.read_csv(data_file,
+                                parse_dates=['date'],
+                                index_col=['state', 'date']).sort_index()
+
+    # print(covid_cases.columns)
+
+    states = covid_cases.groupby('state')
+    covid_cases = states.get_group('NY')
+
+    covid_cases.rename(columns={'data': 'date',
+                                'denominazione_regione': 'region',
+                                'totale_casi': 'cumulative cases'},
+                       inplace=True)
+
+    covid_cases = covid_cases.loc[covid_cases['region'] == 'Lombardia']
+    covid_cases.drop(['region'],
+                     axis=1,
+                     inplace=True)
+
+    covid_cases['area name'] = 'Lombardy'
+    covid_cases.set_index(['date'], inplace=True)
+    covid_cases.set_index(['area name'], inplace=True, append=True)
+    covid_cases = covid_cases.reorder_levels(['area name', 'date'], axis=0)
 
     return covid_cases
 
